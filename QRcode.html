@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bộ Công Cụ QR Pro (Full Option)</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root { --primary: #2563eb; --sidebar-bg: #1e293b; --text-light: #f8fafc; --bg-body: #f1f5f9; }
+        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-body); display: flex; height: 100vh; overflow: hidden; }
+
+        .sidebar { width: 260px; background: var(--sidebar-bg); color: var(--text-light); display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
+        .logo { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 30px; color: #60a5fa; border-bottom: 1px solid #334155; padding-bottom: 20px; }
+        .menu-item { padding: 15px 25px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; color: #cbd5e1; text-decoration: none; }
+        .menu-item:hover { background: #334155; color: white; }
+        .menu-item.active { background: var(--primary); color: white; border-left: 4px solid #60a5fa; }
+        .menu-item i { width: 24px; text-align: center; }
+
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; position: relative; }
+        .section { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .tool-container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-wrap: wrap; gap: 30px; }
+        .form-section { flex: 1.2; min-width: 300px; }
+        .qr-section { flex: 0.8; min-width: 250px; text-align: center; border-left: 1px solid #eee; padding-left: 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #475569; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        textarea { resize: vertical; min-height: 100px; }
+        input[type="file"] { padding: 8px; background: #f8fafc; }
+
+        .dynamic-field { display: flex; gap: 8px; margin-top: 5px; }
+        button { cursor: pointer; border: none; border-radius: 6px; font-weight: 600; }
+        .btn-add { background: #e0e7ff; color: var(--primary); padding: 5px 12px; }
+        .btn-remove { background: #fee2e2; color: #ef4444; padding: 5px 12px; }
+        
+        .btn-generate { background: var(--primary); color: white; padding: 14px; width: 100%; font-size: 16px; margin-top: 20px; }
+        .btn-download { background: #10b981; color: white; padding: 14px; width: 100%; margin-top: 10px; display: none; }
+        
+        .qr-display { margin-top: 20px; padding: 15px; background: white; border: 1px solid #eee; border-radius: 8px; display: inline-block; min-height: 150px; min-width: 150px;}
+        canvas { max-width: 100%; height: auto; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: auto; overflow: auto; }
+            .sidebar { width: 100%; padding: 10px 0; }
+            .tool-container { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-rocket"></i> My Tools</div>
+        <div class="menu-item active" onclick="showSection('vcard-tool')"><i class="fas fa-address-card"></i> Danh bạ</div>
+        <div class="menu-item" onclick="showSection('url-tool')"><i class="fas fa-link"></i> Đường dẫn</div>
+        <div class="menu-item" onclick="showSection('wifi-tool')"><i class="fas fa-wifi"></i> Wifi</div>
+        <div class="menu-item" onclick="showSection('text-tool')"><i class="fas fa-align-left"></i> Văn bản</div>
+    </div>
+
+    <div class="main-content">
+        <div id="vcard-tool" class="section active">
+            <div class="tool-container">
+                <div class="form-section">
+                    <h2><i class="fas fa-address-card"></i> Tạo QR Danh bạ</h2>
+                    
+                    <div style="display: flex; gap: 15px;">
+                        <div class="input-group" style="flex:1"><label>Họ</label><input type="text" id="lastName" placeholder="Nguyễn"></div>
+                        <div class="input-group" style="flex:1"><label>Tên *</label><input type="text" id="firstName" placeholder="Văn A"></div>
+                    </div>
+                    
+                    <div class="input-group" id="phone-container">
+                        <label>Số điện thoại <button class="btn-add" onclick="addField('phone-container', 'tel')">+</button></label>
+                        <input type="tel" class="phone-input" placeholder="09xxxx">
+                    </div>
+                    
+                    <div class="input-group" id="email-container">
+                        <label>Email <button class="btn-add" onclick="addField('email-container', 'email')">+</button></label>
+                        <input type="email" class="email-input" placeholder="abc@gmail.com">
+                    </div>
+
+                    <div class="input-group"><label>Công ty</label><input type="text" id="org" placeholder="Tên công ty"></div>
+                    <div class="input-group"><label>Chức danh</label><input type="text" id="title" placeholder="VD: Giám đốc"></div>
+                    <div class="input-group"><label>Địa chỉ</label><input type="text" id="address" placeholder="Địa chỉ làm việc"></div>
+                    <div class="input-group"><label>Website</label><input type="url" id="website" placeholder="https://..."></div>
+
+                    <div class="input-group">
+                        <label><i class="fas fa-image"></i> Thêm Logo (Tùy chọn)</label>
+                        <input type="file" id="logo-vcard" accept="image/*">
+                    </div>
+
+                    <button class="btn-generate" onclick="generateVCardQR()">Tạo QR</button>
+                    <button id="btnDL-vcard" class="btn-download" onclick="downloadQR('res-vcard', 'danh-ba.png')">Tải xuống</button>
+                </div>
+                <div class="qr-section"><h3>Kết quả</h3><div id="res-vcard" class="qr-display"></div></div>
+            </div>
+        </div>
+
+        <div id="url-tool" class="section">
+            <div class="tool-container">
+                <div class="form-section">
+                    <h2><i class="fas fa-link"></i> Tạo QR Đường dẫn</h2>
+                    <div class="input-group"><label>Link URL *</label><input type="url" id="urlInput"></div>
+                    <div class="input-group"><label>Mô tả (Tên file ảnh)</label><input type="text" id="urlDesc"></div>
+                    <div class="input-group">
+                        <label><i class="fas fa-image"></i> Thêm Logo (Tùy chọn)</label>
+                        <input type="file" id="logo-url" accept="image/*">
+                    </div>
+                    <button class="btn-generate" onclick="generateUrlQR()">Tạo QR</button>
+                    <button id="btnDL-url" class="btn-download" onclick="downloadUrlQR()">Tải xuống</button>
+                </div>
+                <div class="qr-section"><h3>Kết quả</h3><div id="res-url" class="qr-display"></div></div>
+            </div>
+        </div>
+
+        <div id="wifi-tool" class="section">
+            <div class="tool-container">
+                <div class="form-section">
+                    <h2><i class="fas fa-wifi"></i> Tạo QR Wifi</h2>
+                    <div class="input-group"><label>Tên Wifi (SSID) *</label><input type="text" id="ssid"></div>
+                    <div class="input-group"><label>Mật khẩu</label><input type="text" id="wifiPass"></div>
+                    <div class="input-group"><label>Loại bảo mật</label>
+                        <select id="wifiType"><option value="WPA">WPA/WPA2</option><option value="nopass">Không Pass</option></select>
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-image"></i> Thêm Logo (Tùy chọn)</label>
+                        <input type="file" id="logo-wifi" accept="image/*">
+                    </div>
+                    <button class="btn-generate" onclick="generateWifiQR()">Tạo QR</button>
+                    <button id="btnDL-wifi" class="btn-download" onclick="downloadQR('res-wifi', 'wifi.png')">Tải xuống</button>
+                </div>
+                <div class="qr-section"><h3>Kết quả</h3><div id="res-wifi" class="qr-display"></div></div>
+            </div>
+        </div>
+
+        <div id="text-tool" class="section">
+            <div class="tool-container">
+                <div class="form-section">
+                    <h2><i class="fas fa-align-left"></i> Tạo QR Văn bản</h2>
+                    <div class="input-group"><label>Nội dung *</label><textarea id="textContent"></textarea></div>
+                    <div class="input-group">
+                        <label><i class="fas fa-image"></i> Thêm Logo (Tùy chọn)</label>
+                        <input type="file" id="logo-text" accept="image/*">
+                    </div>
+                    <button class="btn-generate" onclick="generateTextQR()">Tạo QR</button>
+                    <button id="btnDL-text" class="btn-download" onclick="downloadQR('res-text', 'van-ban.png')">Tải xuống</button>
+                </div>
+                <div class="qr-section"><h3>Kết quả</h3><div id="res-text" class="qr-display"></div></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.menu-item').forEach(m => {
+            if(m.getAttribute('onclick').includes(id)) m.classList.add('active');
+        });
+    }
+
+    function addField(containerId, type) {
+        const d = document.createElement('div');
+        d.className = 'dynamic-field';
+        d.innerHTML = `<input type="${type}" class="${type === 'tel' ? 'phone-input' : 'email-input'}"> <button class="btn-remove" onclick="this.parentElement.remove()">-</button>`;
+        document.getElementById(containerId).appendChild(d);
+    }
+
+    function renderQRWithLogo(text, containerId, btnId, fileInputId) {
+        const container = document.getElementById(containerId);
+        const fileInput = document.getElementById(fileInputId);
+        container.innerHTML = "";
+        
+        const utf8Text = unescape(encodeURIComponent(text));
+        // Error Correction Level H (High)
+        const qr = qrcode(0, 'H'); 
+        
+        try { qr.addData(utf8Text); qr.make(); } 
+        catch(e) { alert("Dữ liệu quá dài!"); return; }
+
+        const moduleCount = qr.getModuleCount();
+        const cellSize = 8;
+        const margin = 4 * cellSize;
+        const canvasSize = moduleCount * cellSize + 2 * margin;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = canvasSize;
+        canvas.height = canvasSize;
+        const ctx = canvas.getContext('2d');
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvasSize, canvasSize);
+
+        ctx.fillStyle = '#000000';
+        for (let row = 0; row < moduleCount; row++) {
+            for (let col = 0; col < moduleCount; col++) {
+                if (qr.isDark(row, col)) {
+                    ctx.fillRect(col * cellSize + margin, row * cellSize + margin, cellSize, cellSize);
+                }
+            }
+        }
+
+        const finish = () => {
+            container.appendChild(canvas);
+            document.getElementById(btnId).style.display = "block";
+        };
+
+        if (fileInput && fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const logoSize = canvasSize * 0.22; 
+                    const logoPos = (canvasSize - logoSize) / 2;
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(logoPos - 5, logoPos - 5, logoSize + 10, logoSize + 10);
+                    ctx.drawImage(img, logoPos, logoPos, logoSize, logoSize);
+                    finish();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        } else { finish(); }
+    }
+
+    function downloadQR(containerId, fileName) {
+        const canvas = document.querySelector(`#${containerId} canvas`);
+        if (canvas) {
+            const link = document.createElement("a");
+            link.href = canvas.toDataURL("image/png");
+            link.download = fileName;
+            link.click();
+        }
+    }
+
+    function generateVCardQR() {
+        const fn = document.getElementById('firstName').value.trim();
+        const ln = document.getElementById('lastName').value.trim();
+        if(!fn) return alert("Nhập tên!");
+
+        // Lấy dữ liệu các trường mới thêm
+        const org = document.getElementById('org').value.trim();
+        const title = document.getElementById('title').value.trim();
+        const addr = document.getElementById('address').value.trim();
+        const web = document.getElementById('website').value.trim();
+
+        const phones = Array.from(document.querySelectorAll('.phone-input')).map(i=>i.value.trim()).filter(v=>v);
+        const emails = Array.from(document.querySelectorAll('.email-input')).map(i=>i.value.trim()).filter(v=>v);
+        
+        let v = `BEGIN:VCARD\nVERSION:3.0\nN;CHARSET=UTF-8:${ln};${fn};;;\nFN;CHARSET=UTF-8:${fn} ${ln}\n`;
+        
+        if (org) v += `ORG;CHARSET=UTF-8:${org}\n`;
+        if (title) v += `TITLE;CHARSET=UTF-8:${title}\n`;
+        if (addr) v += `ADR;TYPE=WORK;CHARSET=UTF-8:;;${addr};;;;\n`;
+        if (web) v += `URL:${web}\n`;
+
+        phones.forEach(p => v += `TEL;TYPE=CELL:${p}\n`);
+        emails.forEach(e => v += `EMAIL;TYPE=INTERNET:${e}\n`);
+        v += "END:VCARD";
+        
+        renderQRWithLogo(v, 'res-vcard', 'btnDL-vcard', 'logo-vcard');
+    }
+
+    function generateUrlQR() {
+        const url = document.getElementById('urlInput').value.trim();
+        if(!url) return alert("Nhập URL!");
+        renderQRWithLogo(url, 'res-url', 'btnDL-url', 'logo-url');
+    }
+    
+    function downloadUrlQR() {
+        const desc = document.getElementById('urlDesc').value.trim();
+        let name = desc ? desc.replace(/[^a-z0-9]/gi, '-').toLowerCase() + ".png" : "qr-url.png";
+        downloadQR('res-url', name);
+    }
+
+    function generateWifiQR() {
+        const ssid = document.getElementById('ssid').value.trim();
+        const pass = document.getElementById('wifiPass').value;
+        const type = document.getElementById('wifiType').value;
+        if(!ssid) return alert("Nhập SSID!");
+        
+        let s = `WIFI:T:${type};S:${ssid};`;
+        if(type!=='nopass') s+=`P:${pass};`;
+        s+=`;`;
+        renderQRWithLogo(s, 'res-wifi', 'btnDL-wifi', 'logo-wifi');
+    }
+
+    function generateTextQR() {
+        const t = document.getElementById('textContent').value.trim();
+        if(!t) return alert("Nhập nội dung!");
+        renderQRWithLogo(t, 'res-text', 'btnDL-text', 'logo-text');
+    }
+</script>
+</body>
+</html>
