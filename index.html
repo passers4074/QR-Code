@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Tools - QR Generator</title>
-    <script src="qrcode.min.js"></script> 
+    <title>Bộ công cụ QR Code</title>
+    <script src="js/qrcode.min.js"></script> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -117,11 +117,11 @@
             <div class="form-area">
                 <div class="row">
                     <div class="col input-group"><label>Họ</label><input type="text" id="vc-last" placeholder="Nguyễn"></div>
-                    <div class="col input-group"><label>Tên *</label><input type="text" id="vc-first" placeholder="Văn A"></div>
+                    <div class="col input-group"><label>Tên <span style="color: #FF0000;">*</span></label><input type="text" id="vc-first" placeholder="Văn A"></div>
                 </div>
 
                 <div class="input-group" id="phone-group">
-                    <label>SĐT <button class="btn-tiny add" onclick="addField('phone-group', 'tel')" title="Thêm số điện thoại"><i class="fas fa-plus-circle"></i></button></label>
+                    <label>Số điện thoại <span style="color: #FF0000;">*</span><button class="btn-tiny add" onclick="addField('phone-group', 'tel')" title="Thêm số điện thoại"><i class="fas fa-plus-circle"></i></button></label>
                     <input type="tel" class="phone-input" placeholder="Số chính">
                 </div>
 
@@ -152,7 +152,7 @@
         <div class="tool-container">
             <div class="form-area">
                 <div class="input-group">
-                    <label>Đường dẫn (URL) *</label>
+                    <label>Đường dẫn (URL) <span style="color: #FF0000;">*</span></label>
                     <input type="text" id="u-link" placeholder="google.com">
                     <small style="color:gray">Tự động thêm https:// nếu thiếu</small>
                 </div>
@@ -171,7 +171,7 @@
         <div class="tool-container">
             <div class="form-area">
                 <div class="input-group">
-                    <label>Tên Wifi (SSID) *</label>
+                    <label>Tên Wifi (SSID) <span style="color: #FF0000;">*</span></label>
                     <input type="text" id="w-ssid" oninput="checkSSID(this)">
                     <div id="ssid-warn" class="warning-text"><i class="fas fa-exclamation-triangle"></i> Nên nhập không dấu để tương thích tốt nhất.</div>
                 </div>
@@ -194,7 +194,7 @@
         <div class="tool-container">
             <div class="form-area">
                 <div class="input-group">
-                    <label>Nội dung * (Max 1000 ký tự)</label>
+                    <label>Nội dung <span style="color: #FF0000;">*</span> (Max 1000 ký tự)</label>
                     <textarea id="t-content" style="height: 120px;" oninput="checkLen(this)"></textarea>
                     <div id="char-count" style="text-align: right; font-size: 12px; color: gray;">0/1000</div>
                     <div id="text-err" class="warning-text" style="color:red">Nội dung quá dài!</div>
@@ -216,7 +216,7 @@
             <div style="background:#fff7ed; padding:15px; border-left:4px solid #f97316; margin-bottom: 20px;">
                 <strong>⚠️ CAM KẾT & CẢNH BÁO:</strong>
                 <ul style="margin: 5px 0 0 20px; font-size: 14px;">
-                    <li>Chúng tôi <strong>cam kết KHÔNG lưu trữ</strong> bất kỳ dữ liệu nào bạn nhập vào. Mọi quá trình xử lý diễn ra offline ngay trên trình duyệt của bạn.</li>
+                    <li>Chúng tôi cam kết <strong>KHÔNG</strong> lưu trữ bất kỳ dữ liệu nào bạn nhập vào. Mọi quá trình xử lý diễn ra offline ngay trên trình duyệt của bạn.</li>
                     <li>Đây là công cụ tạo mã, không phải công cụ kiểm duyệt. Người dùng chịu hoàn toàn trách nhiệm về nội dung QR mình tạo ra.</li>
                 </ul>
             </div>
